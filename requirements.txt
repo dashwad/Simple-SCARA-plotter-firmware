@@ -1,0 +1,5 @@
+numpy==2.2.6
+pyserial==3.5
+scipy==1.15.3
+svgpathtools==1.7.2
+svgwrite==1.4.3
