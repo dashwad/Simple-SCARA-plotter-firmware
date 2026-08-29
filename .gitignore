@@ -1,0 +1,15 @@
+#python ignores
+__pycache__/
+*.pyc
+*.pyd
+.venv/
+venv/
+env/
+myenv/
+
+#arduino ignores
+*.hex
+*.elf
+
+#vscode igmores
+.vscode/
