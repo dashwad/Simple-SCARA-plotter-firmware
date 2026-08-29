@@ -5,8 +5,9 @@ from scara_kinematics_conversions import scale_svg #connversion
 import serial
 import time
 
-# the port that is currently being used is /dev/cu.usbserial-10
-serialPort = serial.Serial('/dev/cu.usbserial-10', 9600, timeout=1)
+comPort = '/dev/cu.usbserial-10' # the port that is currently being used is /dev/cu.usbserial-10
+
+serialPort = serial.Serial(comPort, 9600, timeout=1)
 
 waypointsList = []
 pointsPerSubpath = 20 #can change if want more or less high res

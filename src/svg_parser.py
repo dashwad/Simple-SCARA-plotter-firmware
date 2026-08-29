@@ -73,7 +73,7 @@ def svg_size(svg_file):
 
 if __name__ == "__main__":
 
-    SVGfile = "Python Scripts/star test.svg"
+    SVGfile = "src/star_test.svg"
 
     waypointsList = svg_to_coordinates(SVGfile, 30) #Parse the SVGfile file with 50 points PER SUBPATH
 
