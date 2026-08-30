@@ -1,25 +1,30 @@
 #include <AccelStepper.h>
 #include <MultiStepper.h>
 
-#define HOMING_SPEED       500
+#define HOMING_SPEED          500
+#define HOMING_SPEED_Z       1000
 
 #define X_STEP_PIN         54
 #define X_DIR_PIN          55
 #define X_ENABLE_PIN       38
 #define X_ENDSTOP           3
-#define X_HOMING_OFFSET  -600 //CHANGe KLATER
+#define X_HOMING_OFFSET  -2980
 
 #define Y_STEP_PIN     60
 #define Y_DIR_PIN      61
 #define Y_ENABLE_PIN   56
 #define Y_ENDSTOP      14
-#define Y_HOMING_OFFSET  -600 //CHANGe KLATER
+#define Y_HOMING_OFFSET  -1360  
 
 #define Z_STEP_PIN     46
 #define Z_DIR_PIN      48
 #define Z_ENABLE_PIN   62
 #define Z_ENDSTOP      18
-#define Z_HOMING_OFFSET  -600 //CHANGe KLATER
+#define Z_HOMING_OFFSET  -6200 
+
+//Pins are based on the ramps 1.6 board on an arduino mega
+//Homing offsets can be changed depending on endstop location. 
+//Endstop pins use the min pins in a ramps 1.6 board
 
 AccelStepper motorx(AccelStepper::DRIVER, X_STEP_PIN, X_DIR_PIN);
 AccelStepper motory(AccelStepper::DRIVER, Y_STEP_PIN, Y_DIR_PIN);
@@ -35,7 +40,7 @@ bool commandReady = false;
 void setup() {
   fromSerial.reserve(200);
 
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.println("");
   Serial.println("--------------------");
   Serial.println("--------------------");
@@ -221,7 +226,7 @@ void processWaypoint(String command){
     String direction = command.substring(1);
     if (direction == "UP"){
       Serial.println("Moving Z-Axis UP-----------------------------------------------------------------------------------------------------"); //Put UP logic here 
-      motorz.moveTo(500);
+      motorz.moveTo(1000);
 
       while (motorz.distanceToGo() != 0){
         motorz.run();
@@ -253,9 +258,17 @@ void processWaypoint(String command){
         homeY();
         return;
       }
+      else if (axis == "z"){
+        homeZ();
+        return;
+      }
+      else if (axis == "a"){
+        homeAll();
+        return;
+      }
       else {
         Serial.println("-------------------");
-        Serial.println("Invalid Command (unknown command)");
+        Serial.println("Invalid Command (unknown axis)");
         Serial.println("-------------------");
         motorx.setSpeed(0);   
         motory.setSpeed(0);
@@ -303,8 +316,8 @@ void processWaypoint(String command){
 }
 
 void homeX() {
-  motorx.setMaxSpeed(300);   
-  motorx.setSpeed(300); 
+  motorx.setMaxSpeed(700);   
+  motorx.setSpeed(700); 
 
   while (digitalRead(X_ENDSTOP) == HIGH) { // keep moving until is triggered
     motorx.runSpeed();
@@ -328,15 +341,15 @@ void homeX() {
 }
 
 void homeY() {
-  motory.setMaxSpeed(300);   
-  motory.setSpeed(300);       
+  motory.setMaxSpeed(700);   
+  motory.setSpeed(700); 
 
-  while (digitalRead(Y_ENDSTOP) == HIGH) { // keep moving until triggered
+  while (digitalRead(Y_ENDSTOP) == HIGH) { // keep moving until is triggered
     motory.runSpeed();
   }
 
   motory.setSpeed(0);
-  motory.setCurrentPosition(0);          //temp set edstop point as 0
+  motory.setCurrentPosition(0);         //temp set edstop point as 0
 
   motory.setMaxSpeed(HOMING_SPEED);
   motory.setSpeed(HOMING_SPEED);  
@@ -344,11 +357,108 @@ void homeY() {
   motory.setAcceleration(1500);
   motory.moveTo(Y_HOMING_OFFSET);
 
-  while (motory.distanceToGo() != 0) {    // block here until offset is done
+  while (motory.distanceToGo() != 0) {   // block here until offset is done
     motory.run();
   }
 
   motory.setCurrentPosition(0);
+}
+
+void homeZ() {
+  motorz.setMaxSpeed(1500);   
+  motorz.setSpeed(1500);       
+
+  while (digitalRead(Z_ENDSTOP) == HIGH) { // keep moving until triggered
+    motorz.runSpeed();
+  }
+
+  motorz.setSpeed(0);
+  motorz.setCurrentPosition(0);          //temp set edstop point as 0
+
+  motorz.setMaxSpeed(HOMING_SPEED_Z);
+  motorz.setSpeed(HOMING_SPEED_Z);  
+
+  motorz.setAcceleration(1500);
+  motorz.moveTo(Z_HOMING_OFFSET);
+
+  while (motorz.distanceToGo() != 0) {    // block here until offset is done
+    motorz.run();
+  }
+
+  motorz.setCurrentPosition(0);
+}
+
+void homeAll(){
+  motory.setMaxSpeed(300);   
+  motory.setSpeed(300);       
+
+  motorz.setMaxSpeed(1000);   
+  motorz.setSpeed(1000);       
+
+  while ((digitalRead(Z_ENDSTOP) == HIGH) || (digitalRead(Y_ENDSTOP) == HIGH)) { // keep moving until triggered
+    if (digitalRead(Z_ENDSTOP) == HIGH){
+      motorz.runSpeed(); 
+    }
+    if (digitalRead(Y_ENDSTOP) == HIGH){
+      motory.runSpeed();
+    }
+  }
+
+  motorz.setSpeed(0);
+  motorz.setCurrentPosition(0);          //temp set edstop point as 0
+
+  motory.setSpeed(0);
+  motory.setCurrentPosition(0);          //temp set edstop point as 0
+
+  //Putt z and y to endstop at the samer time
+
+  motorx.setMaxSpeed(500);   
+  motorx.setSpeed(500); 
+
+  while (digitalRead(X_ENDSTOP) == HIGH) { // keep moving until is triggered
+    motorx.runSpeed();
+  }
+
+  motorx.setSpeed(0);
+  motorx.setCurrentPosition(0);         //temp set edstop point as 0
+
+  motorx.setMaxSpeed(HOMING_SPEED);
+  motorx.setSpeed(HOMING_SPEED);  
+
+  motorx.setAcceleration(1500);
+  motorx.moveTo(X_HOMING_OFFSET);
+
+  while (motorx.distanceToGo() != 0) {   // block here until offset is done
+    motorx.run();
+  }
+
+  motorx.setCurrentPosition(0);
+
+  //Fully homed x and offstet
+
+
+  motory.setMaxSpeed(HOMING_SPEED);
+  motory.setSpeed(HOMING_SPEED);  
+
+  motory.setAcceleration(1500);
+  motory.moveTo(Y_HOMING_OFFSET);
+
+  motorz.setMaxSpeed(HOMING_SPEED_Z);
+  motorz.setSpeed(HOMING_SPEED_Z);  
+
+  motorz.setAcceleration(1500);
+  motorz.moveTo(Z_HOMING_OFFSET);
+
+  while ((motory.distanceToGo() != 0) || (motorz.distanceToGo() != 0)) {    // block here until offset is done
+    motory.run();
+    motorz.run();
+  }
+
+  motory.setCurrentPosition(0);
+  motorz.setCurrentPosition(0);
+  motorx.setCurrentPosition(0);
+
+  //offsetted Z and Y simiultaniusly
 }
 
 void printMenu() {
@@ -358,14 +468,15 @@ void printMenu() {
   Serial.println("s<axis><number>    -> sets maximum speed of motor <axis> to <number>");
   Serial.println("m<axis><number>    -> moves motor <axis> to <number> steps in absolute position");
   Serial.println("j<axis><number>    -> jogs motor <axis> <number> steps in either the positive or negative direction");
-  Serial.println("p<axis>            -> sets current position of <axis> as 0")
+  Serial.println("p<axis>            -> sets current position of <axis> as 0");
   Serial.println("h<axis>            -> returns motor <axis> to 0 steps in absolute position");
   Serial.println("x<axis>            -> stops motor <axis>");
   Serial.println("?                  -> shows this menu");
   Serial.println("Add commas without whitespaces between commands to run simultaneously");
   Serial.println("---- Printing ----");
   Serial.println("W<xsteps>,<ysteps> -> synchronised waypoint move, both axes arrive together (for actual printing)");
-  Serial.println("H<axus             -> home <axis> to the endstop and then offsets(for actual printing)");
+  Serial.println("H<axis>            -> home <axis> to the endstop and then offsets(for actual printing)");
+  Serial.println("Ha                 -> home all axes to the endstop and then offsets in specific order to prevent collisions (for actual printing)");
   Serial.println("-------------------");
 
 }
