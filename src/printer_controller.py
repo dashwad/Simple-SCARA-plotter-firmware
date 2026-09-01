@@ -7,7 +7,7 @@ import time
 
 comPort = '/dev/cu.usbserial-10' # the port that is currently being used is /dev/cu.usbserial-10
 
-serialPort = serial.Serial(comPort, 9600, timeout=1)
+serialPort = serial.Serial(comPort, 115200, timeout=1)
 
 waypointsList = []
 pointsPerSubpath = 20 #can change if want more or less high res
@@ -58,7 +58,7 @@ time.sleep(3)  # wait startup
 def send_command(command):
     serialPort.write((command + '\n').encode()) #sending seial
 
-    time.sleep(0.05)
+    time.sleep(0.1)
 
 def wait_for_reply(): #Loops infinitely (Which traps the code) until the reply is detected, then it will retirn
     while True:

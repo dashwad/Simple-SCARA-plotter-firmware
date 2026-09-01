@@ -20,7 +20,7 @@
 #define Z_DIR_PIN      48
 #define Z_ENABLE_PIN   62
 #define Z_ENDSTOP      18
-#define Z_HOMING_OFFSET  -6200 
+#define Z_HOMING_OFFSET  -6150
 
 //Pins are based on the ramps 1.6 board on an arduino mega
 //Homing offsets can be changed depending on endstop location. 
@@ -365,8 +365,8 @@ void homeY() {
 }
 
 void homeZ() {
-  motorz.setMaxSpeed(1500);   
-  motorz.setSpeed(1500);       
+  motorz.setMaxSpeed(1000);   
+  motorz.setSpeed(1000);       
 
   while (digitalRead(Z_ENDSTOP) == HIGH) { // keep moving until triggered
     motorz.runSpeed();

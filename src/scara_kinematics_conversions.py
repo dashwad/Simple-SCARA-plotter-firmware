@@ -16,7 +16,7 @@ STEPS_PER_REV_2 = 3200
 
 import math
 
-def scale_svg(x, y, svg_width, svg_height, arm_reach=ARM_REACH, margin=0.75, closest_y = 0, min_forward_dist=100):
+def scale_svg(x, y, svg_width, svg_height, arm_reach=ARM_REACH, margin=0.75, closest_y = 0, min_forward_dist=120):
     # filteringh snmall
     if svg_width == 0 and svg_height == 0:
         return 0.0, float(min_forward_dist)
