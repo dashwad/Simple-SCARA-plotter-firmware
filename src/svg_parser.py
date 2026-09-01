@@ -4,7 +4,7 @@ import numpy as np
 wThresh = 10 #Change these to change the minimum subpath size 
 hThresh = 10 #Too large, many intended paths will be skipped, to small, artifacts will easste timre
 
-def svg_to_coordinates(svg_file, number_of_samples):
+def svg_to_coordinates(svg_file, resolution):
     #Basically converts svg to coordinates
     #but also add like z axis moces
     paths, attributes = svg2paths(svg_file) #The attributes data is not used
@@ -24,10 +24,12 @@ def svg_to_coordinates(svg_file, number_of_samples):
             if width < wThresh and height < hThresh: 
                 continue
             
+            length = subpath.length()
+            numSamples = max(2, int(length * resolution))
 
             all_waypoints.append(("UP","UP")) #Lift pen before moving to start ponut
 
-            for i, t in enumerate(np.linspace(0, 1, number_of_samples)):
+            for i, t in enumerate(np.linspace(0, 1, numSamples)):
                 point = subpath.point(t)
 
                 x, y = point.real, point.imag
@@ -75,7 +77,7 @@ if __name__ == "__main__":
 
     SVGfile = "src/star_test.svg"
 
-    waypointsList = svg_to_coordinates(SVGfile, 30) #Parse the SVGfile file with 50 points PER SUBPATH
+    waypointsList = svg_to_coordinates(SVGfile, 1) #resolution of 1 per unit length in line
 
     print(f"\nExtracted {len(waypointsList)} coordinates from the file {SVGfile}: \n")
 

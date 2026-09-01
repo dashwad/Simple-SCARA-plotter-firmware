@@ -10,7 +10,7 @@ comPort = '/dev/cu.usbserial-10' # the port that is currently being used is /dev
 serialPort = serial.Serial(comPort, 115200, timeout=1)
 
 waypointsList = []
-pointsPerSubpath = 20 #can change if want more or less high res
+resolution = 1 #resolution scaling
 
 waypointsExample1 = [(100,  50), #Random list of example waypoints
                  (200, 100),
@@ -116,7 +116,7 @@ while True:
 
     elif command == "runFile": #runs file and will ask fir relpath of the file
         file = input("Please input the file's relative path > ")
-        coordinateList = svg_to_coordinates(file, pointsPerSubpath)
+        coordinateList = svg_to_coordinates(file, resolution)
         scaledCoordinates = []
         svg_width, svg_height, closest_y = svg_size(file)
 
