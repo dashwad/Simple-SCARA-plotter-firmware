@@ -77,7 +77,7 @@ if __name__ == "__main__":
 
     SVGfile = "src/star_test.svg"
 
-    waypointsList = svg_to_coordinates(SVGfile, 1) #resolution of 1 per unit length in line
+    waypointsList = svg_to_coordinates(SVGfile, 0.2) #resolution of 0.2 per unit length in line
 
     print(f"\nExtracted {len(waypointsList)} coordinates from the file {SVGfile}: \n")
 
