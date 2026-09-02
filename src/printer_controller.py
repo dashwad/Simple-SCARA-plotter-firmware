@@ -10,7 +10,7 @@ comPort = '/dev/cu.usbserial-10' # the port that is currently being used is /dev
 serialPort = serial.Serial(comPort, 115200, timeout=1)
 
 waypointsList = []
-resolution = 1 #resolution scaling
+resolution = 0.2 #default resolution is 0.2 (0.1 is quite low res and 0.3 is smooth)
 
 waypointsExample1 = [(100,  50), #Random list of example waypoints
                  (200, 100),
